@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pagination with javascript</title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <style>
+
+        .table{
+            width: 80%;
+            text-emphasis: bold;
+            margin: auto;
+          
+        }
+
+        .head{
+            font-family: 'Fredoka One', cursive;
+            text-align:center;
+            font-weight: bolder;
+            margin-top: 20px;
+        }
+
+        tbody{
+            
+            font-family: 'Do Hyeon', sans-serif;
+        }
+
+        thead{
+
+            font-family: 'Fredoka One', cursive;
+        }
+
+        #search-input{
+
+            width: 50%;
+            margin: auto;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="head">
+
+    <h1>SEARCH...</h1>
+    
+
+    </div>
+    <br><br>
+
+    <input type="text" class="form-control ds-input" id="search-input" placeholder="Search By First Name..." autocomplete="off" margin:"auto" ><br><br>
+
+    <div class="table">
+
+    <table class="table table-hover table-grey">
+        <thead>
+          <tr class="bg-success">
+            <th scope="col">FIRSTNAME</th>
+            <th scope="col">LASTNAME</th>
+            <th scope="col">EMAIL</th>
+          </tr>
+        </thead>
+        <tbody id="mytable">
+          
+        </tbody>
+      </table>
+    </div>
+    
+<script>
+ 
+
+
+    //using fetch method to get data from an api
+
+    fetch("https://reqres.in/api/users")  
+
+        .then(res => res.json())          //we received an http response here.To extract the json body from the response we use .json()
+
+        .then((data) => {                //passing data into an arrow func
+           
+            var apiresponse= data.data;  //extracting only the needed data from json .
+            
+            var apidata=apiresponse;
+            
+            return apidata;              //returning  the apidata to the next function     
+                      
+        })
+
+       
+        
+        .then(closurefunction);                             //after finished loading all the previous function we are calling the next function
+
+        function closurefunction(apidata){                  //used closure function so that apidata is accessible to all the inner functions (prevent undefined error)      
+
+            
+            buildtable(apidata);                            //calling buildtable with original data
+
+            var input = document.getElementById("search-input");    //selecting the search field 
+            
+            input.addEventListener("keyup",()=>{                    //adding keyup event listener to the input field
+
+                var inputvalue = input.value.toLowerCase();         //changing all the typed values to lowercase for implementing searching
+                
+                var data = searching(inputvalue,apidata);           //calling searching func to receive the search results that contains the typed values
+                
+                buildtable(data);                                   //now calling the buildtable with searched results
+                
+
+
+            });
+                        
+
+
+            function searching(inputvalue,apidata){                  //receives typed value from search field and apidata 
+
+                var searchedData = [];                               //initializing an empty array
+
+                for (let i = 0; i < apidata.length; i++) {          //looping through all the apidata
+                    
+                    var name= apidata[i].first_name.toLowerCase();  //changing the values to lowercase for avoiding uppercase/lowercase related problems
+
+                    if (name.includes(inputvalue)) {                //checking whether typed value is in apidata
+
+                        searchedData.push(apidata[i])               //if typed value is found in apidata then that particular apidata is added into seachedData
+                    }
+                    
+                }
+                return searchedData;                                
+               
+            }
+
+
+            
+            
+
+            function buildtable(apidata){  
+                
+                
+                var table=document.getElementById("mytable")   //selecting the table body using its id
+               
+                table.innerHTML = "";                          //clearing table contents after each call to avoid overlapping data from previous call
+                
+                for(var i=0;i< apidata.length;i++){            //looping through all the apidata
+                   
+                     
+                    //using backticks to add html(table data and table row) elements 
+
+                    var row= `<tr>                                     
+                                <td>${apidata[i].first_name}</td>   
+                                <td>${apidata[i].last_name}</td>
+                                <td>${apidata[i].email}</td>
+                            </tr>`
+
+                            table.innerHTML+=row;                       //appending each row to the table
+                }   
+
+
+            
+
+
+             }
+         };     
+
+</script>
+
+</body>
+</html>
+
+
+
+
